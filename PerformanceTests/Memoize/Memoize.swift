@@ -31,7 +31,7 @@ class Memoize {
         return (1...count).map(memoizeFibonacci)
     }
 
-    let recursiveMemoizeFibonacci = recursiveMemoize {number, fibonacci in
+    let recursiveMemoizeFibonacci = recursiveMemoize1 {number, fibonacci in
         number < 2 ? number : fibonacci(number - 1) + fibonacci(number - 2)
     }
     func calculateRecursiveMemoize(_ count: Int) -> [Int] {
@@ -53,6 +53,21 @@ func recursiveMemoize<Input: Hashable, Output>(_ function: @escaping (Input, (In
         return value
     }
     return recursiveFunction
+}
+
+func recursiveMemoize1<Input: Hashable, Output>(_ function: @escaping (Input, (Input) -> Output) -> Output) -> (Input) -> Output {
+
+    var cache = [Input: Output]()
+
+    func recursiveFunction(input: Input) -> Output {
+        if let cached = cache[input] {
+            return cached
+        }
+        let value = function(input, recursiveFunction)
+        cache[input] = value
+        return value
+    }
+    return recursiveFunction(input:)
 }
 
 func memoize<Input: Hashable, Output>(_ function: @escaping (Input) -> Output) -> (Input) -> Output {
